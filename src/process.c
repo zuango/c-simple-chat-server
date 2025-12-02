@@ -10,37 +10,38 @@
 
 void start_chat_loop(int sock)
 {
-  pid_t pid = fork();
+    pid_t pid = fork();
 
-  if(pid == 0) {
-    // RECEIVER
-    unsigned char buf[2048];
-    unsigned char plain[2048];
-    while(1){
-      int r = read(sock, buf, sizeof(buf));
-      if(r <= 0) break;
+    if (pid == 0) {
+        // RECEIVER
+        unsigned char buf[2048];
 
-      size_t out_len = 0;
-      if(decrypt_message(buf, r, plain, &out_len)){
-        plain[out_len] = 0;
-        printf("[peer] %s\n", plain);
-      } else {
-        printf("[!] tampered message\n");
-      }
+        while (1) {
+            int r = read(sock, buf, sizeof(buf));
+            if (r <= 0) break;
+
+            buf[r] = 0;
+            printf("[peer] %s\n", buf);
+            fflush(stdout);
+        }
+
+        close(sock);
+        _exit(0);
     }
-    return;
-  }
 
-  char msg[1024];
-  unsigned char enc[2048];
-  while(1){
-    printf("> ");
-    fflush(stdout);
-    if(!fgets(msg, sizeof(msg), stdin)) break;
+    // SENDER
+    char msg[1024];
 
-    size_t enc_len = 0;
-    encrypt_message((unsigned char*)msg, strlen(msg), enc, &enc_len);
-    write(sock, enc, enc_len);
-  }
-  waitpid(pid, NULL, 0);
+    while (1) {
+        printf("> ");
+        fflush(stdout);
+
+        if (!fgets(msg, sizeof(msg), stdin))
+            break;
+
+        write(sock, msg, strlen(msg));
+    }
+
+    close(sock);
+    waitpid(pid, NULL, 0);
 }

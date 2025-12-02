@@ -31,7 +31,7 @@ int create_client(char *ip, int port)
   struct sockaddr_in addr = {0};
 
   addr.sin_family = AF_INET;
-  addr.sin_port   = port;
+  addr.sin_port   = htons(port);
   inet_pton(AF_INET, ip, &addr.sin_addr);
 
   connect(sock, (struct sockaddr*)&addr, sizeof(addr));

@@ -3,7 +3,7 @@ CFLAGS = -Wall -Wextra -O2 -std=c17
 LIBS = -lcrypto
 INCLUDE = -Iinclude
 
-SRC = src/main.c src/net.c src/process.c src/crypto.c
+SRC = src/main.c src/net.c src/process.c 
 OBJ = $(SRC:src/%.c=build/%.o)
 TARGET = build/shadowcomms
 
